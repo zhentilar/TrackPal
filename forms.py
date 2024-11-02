@@ -11,6 +11,6 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField('Register')
 
 class FoodEntryForm(FlaskForm):
-    food_name = StringField('Food Name', validators=[DataRequired()])
+    name = StringField('Food Name', validators=[DataRequired()])  # Changed from food_name to name
     calories = IntegerField('Calories', validators=[DataRequired()])
     submit = SubmitField('Add Food Entry')

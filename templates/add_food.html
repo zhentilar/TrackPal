@@ -9,8 +9,14 @@
     <h1>Add Food Entry</h1>
     <form method="POST">
         {{ form.hidden_tag() }}
-        {{ form.food_name.label }} {{ form.food_name(size=32) }}<br>
-        {{ form.calories.label }} {{ form.calories(size=32) }}<br>
+        <div>
+            {{ form.name.label }}<br>
+            {{ form.name(size=32) }}
+        </div>
+        <div>
+            {{ form.calories.label }}<br>
+            {{ form.calories(size=32) }}
+        </div>
         {{ form.submit() }}
     </form>
     <a href="{{ url_for('home') }}">Back to Home</a>

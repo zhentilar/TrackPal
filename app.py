@@ -6,6 +6,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, IntegerField
 from wtforms.validators import DataRequired
 from werkzeug.security import generate_password_hash, check_password_hash
+from forms import FoodEntryForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret-key'
@@ -13,44 +14,30 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///trackpal.db'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login_manager = LoginManager(app)
+login_manager.login_view = 'login'  # Specify what page to load for non-authenticated users
 
-class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(150), unique=True, nullable=False)
-    password = db.Column(db.String(150), nullable=False)
-    target_calories = db.Column(db.Integer, default=0)  # Default target
+# Your existing models and forms here...
 
-    def set_password(self, password):
-        self.password = generate_password_hash(password)
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user)
+            flash('Logged in successfully.', 'success')
+            return redirect(url_for('home'))
+        flash('Invalid username or password', 'danger')
+    return render_template('login.html', form=form)
 
-    def check_password(self, password):
-        return check_password_hash(self.password, password)
-
-class FoodEntry(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150), nullable=False)
-    calories = db.Column(db.Integer, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
-
-class LoginForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    submit = SubmitField('Login')
-
-class RegistrationForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    target_calories = IntegerField('Target Calories', default=2000)  # Added target calories field
-    submit = SubmitField('Register')
-
-class FoodEntryForm(FlaskForm):
-    name = StringField('Food Name', validators=[DataRequired()])
-    calories = IntegerField('Calories', validators=[DataRequired()])
-    submit = SubmitField('Add Food Entry')
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out.', 'info')
+    return redirect(url_for('login'))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -67,12 +54,28 @@ def register():
 @app.route('/home')
 @login_required
 def home():
+    print(f"Home route accessed. User authenticated: {current_user.is_authenticated}")
     food_entries = FoodEntry.query.filter_by(user_id=current_user.id).all()
     total_calories = sum(entry.calories for entry in food_entries)
-    progress_percentage = min(round((total_calories / current_user.target_calories * 100), 2), 100)
-    return render_template('home.html', food_entries=food_entries, total_calories=total_calories, progress_percentage=progress_percentage)
+    return render_template('home.html', food_entries=food_entries, total_calories=total_calories)
+
+@app.route('/add_food', methods=['GET', 'POST'])
+@login_required
+def add_food():
+    form = FoodEntryForm()
+    if form.validate_on_submit():
+        food_entry = FoodEntry(
+            name=form.name.data,
+            calories=form.calories.data,
+            user_id=current_user.id
+        )
+        db.session.add(food_entry)
+        db.session.commit()
+        flash('Food entry added successfully!')
+        return redirect(url_for('home'))
+    return render_template('add_food.html', form=form)
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # Create database tables if they don't exist
-    app.run(debug=True)
+    app.run(port=8000, debug=True)
