@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, FloatField, SubmitField
+from wtforms import StringField, IntegerField, FloatField, SubmitField, PasswordField
 from wtforms.validators import DataRequired, Length, NumberRange
 
 class RegistrationForm(FlaskForm):
@@ -14,3 +14,8 @@ class FoodEntryForm(FlaskForm):
     name = StringField('Food Name', validators=[DataRequired()])  # Changed from food_name to name
     calories = IntegerField('Calories', validators=[DataRequired()])
     submit = SubmitField('Add Food Entry')
+
+class LoginForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Login')

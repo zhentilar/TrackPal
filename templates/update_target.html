@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Calorie Target</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Update Your Calorie Target</h1>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('update_target') }}">
+            <div class="form-group">
+                <label for="target_calories">New Calorie Target:</label>
+                <input type="number" name="target_calories" id="target_calories" required>
+            </div>
+            <button type="submit">Update Target</button>
+        </form>
+        
+        <a href="{{ url_for('login') }}">Back to Profile</a>
+    </div>
+</body>
+</html>
