@@ -13,23 +13,24 @@
             width: 100%;
             background-color: #f3f3f3;
             border-radius: 5px;
-            overflow: hidden; /* Ensure that the progress bar fits within the container */
+            overflow: hidden;
         }
         .progress-bar {
             height: 20px;
             background-color: #4caf50;
             text-align: center;
             color: white;
+            line-height: 20px;
         }
         h1, h2, h3 {
             margin-bottom: 10px;
         }
         ul {
-            list-style-type: none; /* Remove default list styling */
-            padding: 0; /* Remove default padding */
+            list-style-type: none;
+            padding: 0;
         }
         li {
-            padding: 5px 0; /* Space between items */
+            padding: 5px 0;
         }
     </style>
 </head>
@@ -40,8 +41,8 @@
 
     <h3>Calorie Progress</h3>
     <div class="progress">
-        <div class="progress-bar" style="width: {{ (total_calories / current_user.target_calories * 100) | round(2) }}%;">
-            {{ total_calories }} / {{ current_user.target_calories }} calories
+        <div class="progress-bar" id="calorie-progress-bar">
+            <span id="calorie-progress-text"></span>
         </div>
     </div>
 
@@ -58,5 +59,21 @@
 
     <a href="{{ url_for('add_food') }}">Add Food Entry</a> | 
     <a href="{{ url_for('logout') }}">Logout</a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const totalCalories = parseInt("{{ total_calories }}");
+            const targetCalories = parseInt("{{ current_user.target_calories }}");
+            const percentage = Math.min((totalCalories / targetCalories * 100), 100).toFixed(2);
+            
+            const progressBar = document.getElementById('calorie-progress-bar');
+            const progressText = document.getElementById('calorie-progress-text');
+            
+            if (progressBar && progressText) {
+                progressBar.style.width = percentage + '%';
+                progressText.textContent = `${totalCalories} / ${targetCalories} calories (${percentage}%)`;
+            }
+        });
+    </script>
 </body>
-</h
+</html>

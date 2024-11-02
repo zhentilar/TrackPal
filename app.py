@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from flask_migrate import Migrate
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, IntegerField
 from wtforms.validators import DataRequired
@@ -10,6 +11,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret-key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///trackpal.db'
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 
 class User(db.Model, UserMixin):
@@ -67,7 +69,8 @@ def register():
 def home():
     food_entries = FoodEntry.query.filter_by(user_id=current_user.id).all()
     total_calories = sum(entry.calories for entry in food_entries)
-    return render_template('home.html', food_entries=food_entries, total_calories=total_calories)
+    progress_percentage = min(round((total_calories / current_user.target_calories * 100), 2), 100)
+    return render_template('home.html', food_entries=food_entries, total_calories=total_calories, progress_percentage=progress_percentage)
 
 if __name__ == '__main__':
     with app.app_context():
