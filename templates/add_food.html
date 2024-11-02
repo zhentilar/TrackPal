@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Food Entry</title>
+</head>
+<body>
+    <h1>Add Food Entry</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        {{ form.food_name.label }} {{ form.food_name(size=32) }}<br>
+        {{ form.calories.label }} {{ form.calories(size=32) }}<br>
+        {{ form.submit() }}
+    </form>
+    <a href="{{ url_for('home') }}">Back to Home</a>
+</body>
+</html>

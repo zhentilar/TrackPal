@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            margin: auto;
+        }
+        h1 {
+            text-align: center;
+        }
+        .flash-message {
+            color: red;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Login</h1>
+
+    <!-- Display flash message -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-message">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.username.label }} 
+            {{ form.username(size=32, placeholder='Enter your username') }}<br>
+        </div>
+        <div>
+            {{ form.password.label }} 
+            {{ form.password(placeholder='Enter your password') }}<br>
+        </div>
+        <div>
+            {{ form.submit() }}
+        </div>
+    </form>
+    <p style="text-align: center;">
+        <a href="{{ url_for('register') }}">Register</a>
+    </p>
+    <p style="text-align: center;">
+        <a href="{{ url_for('home') }}">Go to Home</a>
+    </p>
+</body>
+</html>
