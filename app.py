@@ -18,6 +18,10 @@ migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
+@app.route('/')
+def home_redirect():
+    return redirect(url_for('home'))
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
@@ -133,4 +137,4 @@ def update_target():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # Create database tables if they don't exist
-    app.run(port=5000, host="0.0.0.0")
+    app.run(port=8000, host="0.0.0.0")
