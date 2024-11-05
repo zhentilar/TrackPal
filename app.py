@@ -128,6 +128,10 @@ def register():
 @app.route('/home')
 @login_required
 def home():
+    if not current_user.is_authenticated:
+        flash('You must be logged in to access this page.', 'danger')
+        return redirect(url_for('login'))
+    
     print(f"Home route accessed. User authenticated: {current_user.is_authenticated}")
     check_and_reset_calories(current_user)
     food_entries = FoodEntry.query.filter_by(user_id=current_user.id).all()
@@ -168,4 +172,4 @@ def update_target():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # Create database tables if they don't exist
-    app.run(port=8000, host="0.0.0.0", debug=True)
+    app.run(host="0.0.0.0", debug=True)
