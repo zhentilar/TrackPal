@@ -2,7 +2,7 @@
 #### Video Demo: [TrackPal Video](<URL HERE>)
 #### Description:
 
-TrackPal is a web-based application designed to help users monitor their daily, weekly, and monthly calorie intake. Built with Flask and designed to have a clean and minimal aesthetic, TrackPal provides an intuitive and visually appealing platform for users to track their calorie goals and food entries over time. This project was developed as part of the CS50 web project assignment, focusing on responsive design, visual clarity, and essential functionality.
+TrackPal is a web-based application designed to help users monitor their daily calorie intake. Built with Flask and designed to have a clean and minimal aesthetic, TrackPal provides an intuitive and visually appealing platform for users to track their calorie goals and food entries dairy. This project was developed as part of the CS50 web project assignment, focusing on responsive design, visual clarity, and essential functionality.
 
 ### Project Overview
 
@@ -40,6 +40,6 @@ To run TrackPal locally:
 1. Clone the repository to your local machine.
 2. Navigate to the project folder and install the required dependencies listed.
 3. Start the Flask server with `flask run`.
-4. Access the application through your browser at `http://127.0.0.1:5000`.
+4. Access the application through your browser at `http://127.0.0.1`.
 
 TrackPal is a project that reflects thoughtful design and a commitment to user experience, making it easy to track, set, and meet daily calorie goals in an approachable way.
