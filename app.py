@@ -9,6 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from forms import FoodEntryForm
 from models import User, FoodEntry, db
 from forms import LoginForm, RegistrationForm
+from datetime import datetime
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret-key'
@@ -22,11 +23,40 @@ login_manager.login_view = 'login'
 def home_redirect():
     return redirect(url_for('home'))
 
+def reset_calories_if_new_day():
+    today = datetime.utcnow().date()
+    food_entries = FoodEntry.query.filter_by(user_id=current_user.id).all()
+    
+    # If there are no entries, nothing to reset
+    if not food_entries:
+        return
+    
+    # Check if the last entry is from today
+    last_entry_date = max(entry.date for entry in food_entries)
+    
+    if last_entry_date < today:
+        # Clear all food entries for the previous day
+        FoodEntry.query.filter_by(user_id=current_user.id).delete()
+        db.session.commit()
+
+def check_and_reset_calories(user):
+    today = datetime.utcnow().date()
+    if user.last_reset is None or user.last_reset < today:
+        # Clear all food entries for this user
+        FoodEntry.query.filter_by(user_id=user.id).delete()
+        
+        # Update the last_reset date
+        user.last_reset = today
+        
+        # Commit the changes
+        db.session.commit()
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
     target_calories = db.Column(db.Integer, default=2000)
+    last_reset = db.Column(db.Date, default=datetime.utcnow().date)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -99,6 +129,7 @@ def register():
 @login_required
 def home():
     print(f"Home route accessed. User authenticated: {current_user.is_authenticated}")
+    check_and_reset_calories(current_user)
     food_entries = FoodEntry.query.filter_by(user_id=current_user.id).all()
     total_calories = sum(entry.calories for entry in food_entries)
     return render_template('home.html', food_entries=food_entries, total_calories=total_calories)
@@ -137,4 +168,4 @@ def update_target():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # Create database tables if they don't exist
-    app.run(port=8000, host="0.0.0.0")
+    app.run(port=8000, host="0.0.0.0", debug=True)
