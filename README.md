@@ -1,5 +1,5 @@
 # TrackPal: Your Personal Calorie Tracker
-#### Video Demo: [TrackPal Video](https://youtu.be/RSsz1QPON_I)
+#### Video Demo: (https://youtu.be/RSsz1QPON_I)
 #### Description:
 
 TrackPal is a web-based application designed to help users monitor their daily calorie intake. Built with Flask and designed to have a clean and minimal aesthetic, TrackPal provides an intuitive and visually appealing platform for users to track their calorie goals and food entries dairy. This project was developed as part of the CS50 web project assignment, focusing on responsive design, visual clarity, and essential functionality.
